@@ -24,7 +24,7 @@ public class Notification {
 
     @Column(name = "is_read", nullable = false)
     @Builder.Default
-    private boolean read = false;
+    private boolean isRead = false;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "notification_type", nullable = false, length = 50)
