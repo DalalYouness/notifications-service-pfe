@@ -56,9 +56,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional(readOnly = true)
     public long getUnreadCount(Long userId) {
-        // Guard Clause
         validateUserId(userId);
-
         return notificationRepository.countByUserIdAndIsReadFalse(userId);
     }
 
