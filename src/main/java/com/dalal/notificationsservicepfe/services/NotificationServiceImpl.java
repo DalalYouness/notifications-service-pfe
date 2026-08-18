@@ -46,9 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional(readOnly = true)
     public List<NotificationResponse> getUserNotifications(Long userId) {
-        // Guard Clause
         validateUserId(userId);
-
         return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId)
                 .stream()
                 .map(notificationMapper::toResponseDTO)
