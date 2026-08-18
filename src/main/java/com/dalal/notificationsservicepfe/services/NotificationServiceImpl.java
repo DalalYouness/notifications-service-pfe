@@ -3,6 +3,7 @@ package com.dalal.notificationsservicepfe.services;
 import com.dalal.notificationsservicepfe.dtos.event.NotificationEvent;
 import com.dalal.notificationsservicepfe.dtos.response.NotificationResponse;
 import com.dalal.notificationsservicepfe.entities.Notification;
+import com.dalal.notificationsservicepfe.exceptions.ResourceNotFoundException;
 import com.dalal.notificationsservicepfe.mappers.NotificationMapper;
 import com.dalal.notificationsservicepfe.repositories.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +63,21 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationResponse markAsRead(Long id) {
-        return null;
+        // Guard Clause
+        validateId(id);
+
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification non trouvée avec l'ID : " + id));
+
+        // Early return si déjà lue (évite un UPDATE inutile en DB)
+        if (notification.isRead()) {
+            return notificationMapper.toResponseDTO(notification);
+        }
+
+        notification.setRead(true);
+        Notification updatedNotification = notificationRepository.save(notification);
+
+        return notificationMapper.toResponseDTO(updatedNotification);
     }
 
     @Override
@@ -78,6 +93,12 @@ public class NotificationServiceImpl implements NotificationService {
     private void validateUserId(Long userId) {
         if (userId == null || userId <= 0) {
             throw new IllegalArgumentException("L'ID utilisateur doit être un identifiant valide.");
+        }
+    }
+
+    private void validateId(Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("L'ID de la notification doit être un identifiant valide.");
         }
     }
 }
