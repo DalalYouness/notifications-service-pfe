@@ -1,3 +1,4 @@
+package com.dalal.notificationsservicepfe.services;
 
 import com.dalal.notificationsservicepfe.dtos.event.NotificationEvent;
 import com.dalal.notificationsservicepfe.dtos.response.NotificationResponse;
