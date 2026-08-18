@@ -23,12 +23,12 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void processNotificationEvent(NotificationEvent event) {
-        // Guard Clause : Validation de l'événement Kafka
-        // Guard Clause : Validation manuelle pour les messages Kafka
-        // Contrairement aux requêtes HTTP gérées par les Controllers (où @Valid/@NotNull fonctionnent automatiquement),
-        // les messages provenant d'un Kafka Broker ne passent pas par la couche de validation Spring Web.
-        // Cette vérification protège le Consumer contre les exceptions 'NullPointerException' (Poison Pills)
-        // et évite le blocage du traitement des messages en file d'attente.
+        /* Guard Clause : Validation de l'événement Kafka
+        Guard Clause : Validation manuelle pour les messages Kafka
+        Contrairement aux requêtes HTTP gérées par les Controllers (où @Valid/@NotNull fonctionnent automatiquement),
+        les messages provenant d'un Kafka Broker ne passent pas par la couche de validation Spring Web.
+        Cette vérification protège le Consumer contre les exceptions 'NullPointerException' (Poison Pills)
+        et évite le blocage du traitement des messages en file d'attente.*/
         if (event == null || event.userId() == null || event.type() == null) {
             log.warn("Événement de notification invalide ou incomplet reçu : {}", event);
             return;
@@ -56,8 +56,12 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long getUnreadCount(Long userId) {
-        return 0;
+        // Guard Clause
+        validateUserId(userId);
+
+        return notificationRepository.countByUserIdAndIsReadFalse(userId);
     }
 
     @Override

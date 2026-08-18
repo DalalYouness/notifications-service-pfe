@@ -1,0 +1,59 @@
+# script name for ci/cd workflow
+name: CI Pipeline for Notification Microservice
+
+# trigger (when script would start)
+on:
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master ]
+
+# jobs
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # Service containers to run alongside the job (Ephemeral Test DB)
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: notifications_service_pfe_db
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Grant execute permission for Maven Wrapper
+        run: chmod +x mvnw
+
+      - name: Build and Test with Maven
+        env:
+          # Disable Cloud Config & Service Discovery during CI tests
+          SPRING_CLOUD_CONFIG_ENABLED: "false"
+          SPRING_CLOUD_DISCOVERY_ENABLED: "false"
+
+          # Temporary Database Credentials for Integration Tests
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/notifications_service_pfe_db
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: ""
+          SPRING_JPA_HIBERNATE_DDL_AUTO: "none"
+
+          # Disable Kafka Auto-startup or Embedded Kafka if not needed during unit/integration tests
+          SPRING_KAFKA_LISTENER_AUTO_STARTUP: "false"
+        run: ./mvnw clean package
