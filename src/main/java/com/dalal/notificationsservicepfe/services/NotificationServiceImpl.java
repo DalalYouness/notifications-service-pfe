@@ -14,10 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 
-@Service
+
 @RequiredArgsConstructor
 @Slf4j
 @Transactional
+@Service
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationMapper notificationMapper;
