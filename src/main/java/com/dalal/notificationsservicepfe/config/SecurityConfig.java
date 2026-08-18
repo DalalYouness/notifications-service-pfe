@@ -2,6 +2,7 @@ package com.dalal.notificationsservicepfe.config;
 
 import com.dalal.notificationsservicepfe.security.CustomAccessDeniedHandler;
 import com.dalal.notificationsservicepfe.security.CustomAuthenticationEntryPoint;
+import com.dalal.notificationsservicepfe.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
@@ -20,7 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
      private final CustomAuthenticationEntryPoint  customAuthenticationEntryPoint;
      private final CustomAccessDeniedHandler customAccessDeniedHandler;
-    //private final JwtAuthenticationFilter  jwtAuthenticationFilter;
+     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain  securityFilterChain(HttpSecurity http) throws Exception {
@@ -43,8 +45,8 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
-                        .accessDeniedHandler(customAccessDeniedHandler));
-                //.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                        .accessDeniedHandler(customAccessDeniedHandler))
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
