@@ -82,7 +82,14 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void deleteNotification(Long id) {
+        // Guard Clause
+        validateId(id);
 
+        if (!notificationRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Notification non trouvée avec l'ID : " + id);
+        }
+
+        notificationRepository.deleteById(id);
     }
 
     @Override
