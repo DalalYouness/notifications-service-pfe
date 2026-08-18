@@ -94,7 +94,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void deleteAllUserNotifications(Long userId) {
-
+        // Guard Clause
+        validateUserId(userId);
+        notificationRepository.deleteByUserId(userId);
     }
 
     private void validateUserId(Long userId) {
