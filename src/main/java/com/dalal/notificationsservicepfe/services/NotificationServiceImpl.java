@@ -44,8 +44,15 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<NotificationResponse> getUserNotifications(Long userId) {
-        return List.of();
+        // Guard Clause
+        validateUserId(userId);
+
+        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(notificationMapper::toResponseDTO)
+                .toList();
     }
 
     @Override
@@ -66,5 +73,11 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void deleteAllUserNotifications(Long userId) {
 
+    }
+
+    private void validateUserId(Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("L'ID utilisateur doit être un identifiant valide.");
+        }
     }
 }
