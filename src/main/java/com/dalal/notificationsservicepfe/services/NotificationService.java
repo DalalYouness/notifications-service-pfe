@@ -1,6 +1,8 @@
 package com.dalal.notificationsservicepfe.services;
 
-import com.dalal.notificationsservicepfe.dtos.event.NotificationEvent;
+import com.dalal.notificationsservicepfe.dtos.event.ReservationCreatedEvent;
+import com.dalal.notificationsservicepfe.dtos.event.ReservationStatusUpdatedEvent;
+import com.dalal.notificationsservicepfe.dtos.event.ReviewCreatedEvent;
 import com.dalal.notificationsservicepfe.dtos.response.NotificationResponse;
 
 import java.util.List;
@@ -8,32 +10,42 @@ import java.util.List;
 public interface NotificationService {
 
     /**
-     * Process and save incoming notification event from Kafka broker
+     * Traiter et enregistrer une notification lors de la création d'une réservation
      */
-    void processNotificationEvent(NotificationEvent event);
+    void createReservationCreatedNotification(ReservationCreatedEvent event);
 
     /**
-     * Get all notifications for a specific user (Client or Prestataire)
+     * Traiter et enregistrer une notification lors du changement de statut d'une réservation
+     */
+    void createReservationStatusUpdatedNotification(ReservationStatusUpdatedEvent event);
+
+    /**
+     * Traiter et enregistrer une notification lors de la création d'un avis/review
+     */
+    void createReviewCreatedNotification(ReviewCreatedEvent event);
+
+    /**
+     * Obtenir toutes les notifications d'un utilisateur spécifique (Client ou Prestataire)
      */
     List<NotificationResponse> getUserNotifications(Long userId);
 
     /**
-     * Get count of unread notifications for badge display
+     * Obtenir le nombre de notifications non lues (pour le badge)
      */
     long getUnreadCount(Long userId);
 
     /**
-     * Mark a specific notification as read
+     * Marquer une notification spécifique comme lue
      */
     NotificationResponse markAsRead(Long id);
 
     /**
-     * Delete a single notification
+     * Supprimer une seule notification
      */
     void deleteNotification(Long id);
 
     /**
-     * Delete all notifications for a specific user
+     * Supprimer toutes les notifications d'un utilisateur
      */
     void deleteAllUserNotifications(Long userId);
 }
