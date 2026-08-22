@@ -1,5 +1,6 @@
 package com.dalal.notificationsservicepfe.dtos.event;
 
+import com.dalal.notificationsservicepfe.enums.BookingStatus;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
