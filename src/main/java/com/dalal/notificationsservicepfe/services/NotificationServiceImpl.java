@@ -1,6 +1,5 @@
 package com.dalal.notificationsservicepfe.services;
 
-import com.dalal.notificationsservicepfe.dtos.event.NotificationEvent;
 import com.dalal.notificationsservicepfe.dtos.event.ReservationCreatedEvent;
 import com.dalal.notificationsservicepfe.dtos.event.ReservationStatusUpdatedEvent;
 import com.dalal.notificationsservicepfe.dtos.event.ReviewCreatedEvent;
@@ -47,6 +46,8 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
 
         notificationRepository.save(notification);
+        // TODO: Push real-time notification to user topic via WebSocket
+    // messagingTemplate.convertAndSendToUser(event.providerId().toString(), "/queue/notifications", notificationMapper.toResponseDTO(notification));
         log.info("Notification BOOKING_CREATED enregistrée pour l'utilisateur ID: {}", event.providerId());
     }
 
@@ -103,6 +104,8 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
 
         notificationRepository.save(notification);
+        // TODO: Push real-time notification to user topic via WebSocket
+// messagingTemplate.convertAndSendToUser(event.providerId().toString(), "/queue/notifications", notificationMapper.toResponseDTO(notification));
         log.info("Notification {} enregistrée pour l'utilisateur ID: {}", type, targetUserId);
     }
 
@@ -122,6 +125,8 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
 
         notificationRepository.save(notification);
+        // TODO: Push real-time notification to user topic via WebSocket
+        // messagingTemplate.convertAndSendToUser(event.providerId().toString(), "/queue/notifications", notificationMapper.toResponseDTO(notification));
         log.info("Notification REVIEW_RECEIVED enregistrée pour le provider ID: {}", event.providerId());
     }
 
@@ -152,6 +157,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         // Early return si déjà lue (évite un UPDATE inutile en DB)
         if (notification.isRead()) {
+
             return notificationMapper.toResponseDTO(notification);
         }
 

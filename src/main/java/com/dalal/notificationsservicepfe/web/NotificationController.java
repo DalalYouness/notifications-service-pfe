@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,8 @@ import java.util.List;
 @RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
 @Tag(name = "Notification Controller", description = "Endpoints de gestion des notifications utilisateurs")
+@PreAuthorize("hasRole('ROLE_CLIENT') or hasRole('ROLE_PROVIDER')") // on peut aussi utiliser hasAnyRole
+// as long as we have the same condition for roles we can put it on the class level
 public class NotificationController {
 
     private final NotificationService notificationService;
@@ -26,6 +29,7 @@ public class NotificationController {
     @Operation(summary = "Consulter les notifications d'un utilisateur",
             description = "Récupère toutes les notifications triées de la plus récente à la plus ancienne.")
     @ApiResponse(responseCode = "200", description = "Liste récupérée avec succès")
+
     public ResponseEntity<List<NotificationResponse>> getUserNotifications(@PathVariable Long userId) {
         return ResponseEntity.ok(notificationService.getUserNotifications(userId));
     }
