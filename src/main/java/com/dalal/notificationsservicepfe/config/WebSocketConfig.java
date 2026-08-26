@@ -1,15 +1,20 @@
 package com.dalal.notificationsservicepfe.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-
+// class config en general hiya mowadaf kaysaybo spring kaylancer ga3 lmethods li fih dik sa3a hit rah kat3tbr config dkchi elach machi bdaroura tkon katrj3 bean
+// machi fhal component sf kaysayab lobject o kaykhalik hta t3ayat lih nta
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws-notifications")
