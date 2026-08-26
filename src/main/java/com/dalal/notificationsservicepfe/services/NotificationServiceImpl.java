@@ -11,6 +11,7 @@ import com.dalal.notificationsservicepfe.mappers.NotificationMapper;
 import com.dalal.notificationsservicepfe.repositories.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationMapper notificationMapper;
-
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public void createReservationCreatedNotification(ReservationCreatedEvent event) {
@@ -45,10 +46,20 @@ public class NotificationServiceImpl implements NotificationService {
                 .createdAt(event.createdAt() != null ? event.createdAt() : LocalDateTime.now())
                 .build();
 
-        notificationRepository.save(notification);
-        // TODO: Push real-time notification to user topic via WebSocket
-    // messagingTemplate.convertAndSendToUser(event.providerId().toString(), "/queue/notifications", notificationMapper.toResponseDTO(notification));
-        log.info("Notification BOOKING_CREATED enregistrée pour l'utilisateur ID: {}", event.providerId());
+        // 1. Persistence
+        Notification savedNotification = notificationRepository.save(notification);
+
+        // 2. Real-time Push via WebSocket (STOMP)
+        String targetUser = String.valueOf(savedNotification.getUserId());
+
+        simpMessagingTemplate.convertAndSendToUser(
+                targetUser,
+                "/queue/notifications", // on a utiliser notifications comme contract avec le front on peur utiliser autre nom suffit que les deux utilise le meme
+                // at ws:notifications li drna fl config hadik dyal handshak
+                notificationMapper.toResponseDTO(savedNotification)
+        );
+
+        log.info("Notification BOOKING_CREATED enregistrée et envoyée via WebSocket pour l'utilisateur ID: {}", event.providerId());
     }
 
     @Override
@@ -103,10 +114,17 @@ public class NotificationServiceImpl implements NotificationService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        notificationRepository.save(notification);
-        // TODO: Push real-time notification to user topic via WebSocket
-// messagingTemplate.convertAndSendToUser(event.providerId().toString(), "/queue/notifications", notificationMapper.toResponseDTO(notification));
-        log.info("Notification {} enregistrée pour l'utilisateur ID: {}", type, targetUserId);
+        Notification savedNotification = notificationRepository.save(notification);
+
+        // Real-time Push via WebSocket (STOMP)
+        simpMessagingTemplate.convertAndSendToUser(
+                String.valueOf(savedNotification.getUserId()),
+                "/queue/notifications",
+                notificationMapper.toResponseDTO(savedNotification)
+        );
+
+    // messagingTemplate.convertAndSendToUser(event.providerId().toString(), "/queue/notifications", notificationMapper.toResponseDTO(notification));
+        log.info("Notification {} enregistrée et pushée via WebSocket pour l'utilisateur ID: {}", type, targetUserId);
     }
 
     @Override
@@ -124,9 +142,9 @@ public class NotificationServiceImpl implements NotificationService {
                 .createdAt(event.createdAt() != null ? event.createdAt() : LocalDateTime.now())
                 .build();
 
-        notificationRepository.save(notification);
+        Notification savedNotification =  notificationRepository.save(notification);
         // TODO: Push real-time notification to user topic via WebSocket
-        // messagingTemplate.convertAndSendToUser(event.providerId().toString(), "/queue/notifications", notificationMapper.toResponseDTO(notification));
+        simpMessagingTemplate.convertAndSendToUser(event.providerId().toString(), "/queue/notifications", notificationMapper.toResponseDTO(savedNotification));
         log.info("Notification REVIEW_RECEIVED enregistrée pour le provider ID: {}", event.providerId());
     }
 
