@@ -29,7 +29,6 @@ public class NotificationController {
     @Operation(summary = "Consulter les notifications d'un utilisateur",
             description = "Récupère toutes les notifications triées de la plus récente à la plus ancienne.")
     @ApiResponse(responseCode = "200", description = "Liste récupérée avec succès")
-
     public ResponseEntity<List<NotificationResponse>> getUserNotifications(@PathVariable Long userId) {
         return ResponseEntity.ok(notificationService.getUserNotifications(userId));
     }

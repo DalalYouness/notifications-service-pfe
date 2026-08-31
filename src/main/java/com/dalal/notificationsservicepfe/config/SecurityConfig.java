@@ -3,6 +3,7 @@ package com.dalal.notificationsservicepfe.config;
 import com.dalal.notificationsservicepfe.security.CustomAccessDeniedHandler;
 import com.dalal.notificationsservicepfe.security.CustomAuthenticationEntryPoint;
 import com.dalal.notificationsservicepfe.security.JwtAuthenticationFilter;
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,11 +34,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // 1. (Public / Documentation)
                         // you see every end points in request http matchers that endpoints permit All
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.FORWARD).permitAll()
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/actuator/health"
+                                "/actuator/health",
+                                "/ws-notifications/**"
                         ).permitAll()
                         // any other request have to have authenticated
                         // we handle that authorisation either in that security config but preferable to use it inside controllers

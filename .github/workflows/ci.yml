@@ -4,7 +4,7 @@ name: CI Pipeline for Notification Microservice
 # trigger (when script would start)
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 

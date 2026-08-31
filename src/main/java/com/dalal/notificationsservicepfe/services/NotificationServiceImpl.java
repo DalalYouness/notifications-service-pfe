@@ -51,7 +51,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         // 2. Real-time Push via WebSocket (STOMP)
         String targetUser = String.valueOf(savedNotification.getUserId());
-
+        log.info("📢 [STOMP Dispatch] Sending Notification to User Destination: '/user/{}/queue/notifications'", targetUser);
         simpMessagingTemplate.convertAndSendToUser(
                 targetUser,
                 "/queue/notifications", // on a utiliser notifications comme contract avec le front on peur utiliser autre nom suffit que les deux utilise le meme
