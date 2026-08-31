@@ -7,8 +7,11 @@ import com.dalal.notificationsservicepfe.dtos.response.NotificationResponse;
 import com.dalal.notificationsservicepfe.entities.Notification;
 import com.dalal.notificationsservicepfe.enums.NotificationType;
 import com.dalal.notificationsservicepfe.exceptions.ResourceNotFoundException;
+import com.dalal.notificationsservicepfe.feign.client.IdentityClient;
+import com.dalal.notificationsservicepfe.feign.dto.ProfilSummaryDto;
 import com.dalal.notificationsservicepfe.mappers.NotificationMapper;
 import com.dalal.notificationsservicepfe.repositories.NotificationRepository;
+import jakarta.persistence.metamodel.IdentifiableType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -28,6 +31,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationMapper notificationMapper;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final IdentityClient identityClient;
 
     @Override
     public void createReservationCreatedNotification(ReservationCreatedEvent event) {
@@ -78,7 +82,19 @@ public class NotificationServiceImpl implements NotificationService {
             case CONFIRMED -> {
                 targetUserId = event.clientId();
                 type = NotificationType.BOOKING_CONFIRMED;
-                message = "Votre réservation (N° " + event.bookingId() + ") a été confirmée par le prestataire.";
+
+                // 🔹 Appel Feign pour récupérer le numéro de téléphone du prestataire
+                String providerPhone = "N/A";
+                try {
+                    ProfilSummaryDto providerProfil = identityClient.getProfilDetail(event.providerId());
+                    if (providerProfil != null && providerProfil.phoneNumber() != null) {
+                        providerPhone = providerProfil.phoneNumber();
+                    }
+                } catch (Exception e) {
+                    log.error("Erreur lors de la récupération du téléphone pour le prestataire N° {}", event.providerId(), e);
+                }
+
+                message = "Votre réservation (N° " + event.bookingId() + ") a été confirmée par le prestataire. Contact : " + providerPhone;
             }
             case CANCELLED -> {
                 targetUserId = event.providerId();
