@@ -22,7 +22,6 @@ This project is part of a Master's final project focused on building a scalable,
 - [Prerequisites](#prerequisites)
 - [Configuration](#configuration)
 - [Run locally](#run-locally)
-- [Testing](#testing)
 - [Observability and documentation](#observability-and-documentation)
 - [Security](#security)
 - [Related services](#related-services)
@@ -247,20 +246,6 @@ Windows:
 ```
 
 Flyway applies the notification schema on startup when the database connection is correctly configured.
-
-## Testing
-
-Run the full test suite with:
-
-```bash
-./mvnw test
-```
-
-For a complete verification package, including compilation and integration checks:
-
-```bash
-./mvnw clean verify
-```
 
 ## Observability and documentation
 
