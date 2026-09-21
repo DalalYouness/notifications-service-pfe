@@ -301,18 +301,4 @@ This microservice is designed to operate as part of the broader home-services pl
 
 Topic names and event contracts must remain compatible with the producing services.
 
-## Contributing
-
-1. Create a feature branch from the default branch.
-2. Implement the change following the existing package and naming conventions.
-3. Add or update tests where appropriate.
-4. Run `./mvnw clean verify`.
-5. Open a pull request with a clear description of the change and its impact on event contracts or APIs.
-
-## License
-
-This repository is an academic Master's final-project component. Add the project's formal license and attribution details here when they are finalized.
-
----
-
 Built as part of a distributed home-services platform Master's project.
